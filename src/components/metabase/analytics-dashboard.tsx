@@ -1,74 +1,53 @@
-import { useState, useContext, useReducer } from 'react'
-import { InteractiveDashboard, InteractiveQuestion } from '@metabase/embedding-sdk-react'
+import { useState, useContext } from 'react'
+import { InteractiveDashboard } from '@metabase/embedding-sdk-react'
 import { AnalyticsContext } from "./analytics-provider"
 
 import { ThemeSwitcher } from './theme-switcher'
+import { TEAMS } from './teams'
+
+// The "Team Pulse" dashboard in Metabase. Its "Team" filter (slug: team) is
+// wired to every card; this app owns the filter value instead of Metabase's UI.
+const TEAM_DASHBOARD_ID = Number(import.meta.env.VITE_TEAM_DASHBOARD_ID)
 
 export const AnalyticsDashboard = () => {
   const {email, themeKey} = useContext(AnalyticsContext)
-  const [dashboardId, setDashboardId] = useState(DASHBOARDS[0].id)
-
-  const [isCreateQuestion, toggleCreateQuestion] = useReducer((s) => !s, false)
-
-  const isDashboard = !isCreateQuestion
+  const [team, setTeam] = useState('GSW')
 
   return (
     <div className={`analytics-root theme-${themeKey}`}>
       <div className="analytics-container">
         <div className="analytics-header">
           <div>
-            
+
           </div>
 
           <div className="analytics-header-right">
-            {isDashboard && (
-              <select
-                className="dashboard-select"
-                onChange={(e) => setDashboardId(Number(e.target.value))}
-              >
-                {DASHBOARDS.map((dashboard) => (
-                  <option key={dashboard.id} value={dashboard.id}>
-                    {dashboard.name}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            <a href="#!" onClick={toggleCreateQuestion}>
-              {isCreateQuestion ? 'Back to dashboard' : 'Create Question'}
-            </a>
+            <select
+              className="dashboard-select"
+              value={team}
+              onChange={(e) => setTeam(e.target.value)}
+            >
+              {TEAMS.map(({ abbr, name }) => (
+                <option key={abbr} value={abbr}>
+                  {name}
+                </option>
+              ))}
+            </select>
 
             <ThemeSwitcher />
           </div>
         </div>
 
         {/** Reload the dashboard when user changes with the key prop */}
-        {isDashboard && (
-          <InteractiveDashboard
-            dashboardId={dashboardId}
-            withTitle
-            withDownloads
-            key={email}
-          />
-        )}
-
-        {isCreateQuestion && <InteractiveQuestion questionId="new" />}
+        <InteractiveDashboard
+          dashboardId={TEAM_DASHBOARD_ID}
+          parameters={{ team }}
+          hiddenParameters={['team']}
+          withTitle
+          withDownloads
+          key={email}
+        />
       </div>
     </div>
   )
 }
-
-const DASHBOARDS = [
-  {
-    "id": 11,
-    "name": "Orders"
-  },
-  {
-    "id": 12,
-    "name": "People"
-  },
-  {
-    "id": 13,
-    "name": "Products"
-  }
-]

@@ -1,21 +1,23 @@
-import {createContext, useState} from 'react'
+import {createContext, useState, type ReactNode} from 'react'
 
-/**
- * @typedef {Object} AnalyticsContextType
- * @property {'light'|'dark'} themeKey - The current theme key.
- * @property {null} [email] - Email of the user.
- * @property {(themeKey: 'light'|'dark') => void} setThemeKey - Function to update the theme.
- */
+export type ThemeKey = 'light' | 'dark'
 
-export const AnalyticsContext = createContext(
-  /** @type {AnalyticsContextType} */ ({})
-);
+type AnalyticsContextType = {
+  themeKey: ThemeKey
+  email?: string
+  setThemeKey: (themeKey: ThemeKey) => void
+}
+
+export const AnalyticsContext = createContext<AnalyticsContextType>({
+  themeKey: 'light',
+  setThemeKey: () => {},
+});
 
 // Demo provider that adds the state for the example theme switcher component.
 // Delete this once you've played around with the theme switcher, and use your
 // own application's theming instead.
-export const AnalyticsProvider = ({children}) => {
-  const [themeKey, setThemeKey] = useState(/** @type {'light'|'dark'} */ ('light'));
+export const AnalyticsProvider = ({children}: {children: ReactNode}) => {
+  const [themeKey, setThemeKey] = useState<ThemeKey>('light');
 
   return (
     <AnalyticsContext.Provider value={{themeKey, setThemeKey}}>

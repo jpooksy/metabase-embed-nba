@@ -1,17 +1,16 @@
-import {useContext, useMemo} from 'react'
-import {MetabaseProvider} from '@metabase/embedding-sdk-react'
+import {useContext, useMemo, type ReactNode} from 'react'
+import {MetabaseProvider, type MetabaseAuthConfig, type MetabaseTheme} from '@metabase/embedding-sdk-react'
 
-import { AnalyticsContext } from './analytics-provider'
+import { AnalyticsContext, type ThemeKey } from './analytics-provider'
 
-/** @type {import('@metabase/embedding-sdk-react').MetabaseAuthConfig} */
-const authConfig = {
+const authConfig: MetabaseAuthConfig = {
   metabaseInstanceUrl: import.meta.env.VITE_METABASE_INSTANCE_URL,
   apiKey: import.meta.env.VITE_METABASE_API_KEY
 }
 
 // Demo provider that wraps the MetabaseProvider with a custom theme and auth configuration.
 // In a real app, the theme would be managed by your application.
-export const EmbeddingProvider = ({children}) => {
+export const EmbeddingProvider = ({children}: {children: ReactNode}) => {
   const {themeKey} = useContext(AnalyticsContext)
   const theme = useMemo(() => THEMES[themeKey], [themeKey])
 
@@ -22,12 +21,8 @@ export const EmbeddingProvider = ({children}) => {
   )
 }
 
-/**
- * Sample themes for Metabase components.
- *
- * @type {Record<string, import('@metabase/embedding-sdk-react').MetabaseTheme>}
- */
-const THEMES = {
+// Sample themes for Metabase components.
+const THEMES: Record<ThemeKey, MetabaseTheme> = {
   // Light theme
   light: {
     colors: {
