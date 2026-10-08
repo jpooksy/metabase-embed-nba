@@ -37,6 +37,10 @@ def pct(col):
     return {json.dumps(["name", col]): {"number_style": "percent", "decimals": 1}}
 
 
+def titles(**cols):
+    return {json.dumps(["name", col]): {"column_title": title} for col, title in cols.items()}
+
+
 # (sql file, card name, display, visualization settings, dashboard position)
 CARDS = [
     ("1_record.sql", "Record", "scalar", {}, dict(row=0, col=0, size_x=8, size_y=3)),
@@ -45,8 +49,10 @@ CARDS = [
     ("4_top_scorers.sql", "Top scorers (PPG)", "row",
      {"graph.dimensions": ["PLAYER_NAME"], "graph.metrics": ["POINTS_PER_GAME"], "graph.show_values": True},
      dict(row=3, col=0, size_x=12, size_y=8)),
-    ("5_cumulative_wins.sql", "Wins over the season", "line",
-     {"graph.dimensions": ["GAME_DATE"], "graph.metrics": ["WINS"]},
+    ("5_top_performances.sql", "Best single-game performances", "table",
+     {"column_settings": {
+         **titles(PLAYER="Player", POINTS="PTS", OPPONENT="Opponent", GAME_DATE="Date"),
+     }},
      dict(row=3, col=12, size_x=12, size_y=8)),
 ]
 
